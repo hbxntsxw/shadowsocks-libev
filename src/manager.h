@@ -44,7 +44,8 @@ struct manager_ctx {
     char *iface;
     char *acl;
     char *user;
-    char *obfs;
+    char *plugin;
+    char *plugin_opts;
     char *manager_address;
     char **hosts;
     int host_num;

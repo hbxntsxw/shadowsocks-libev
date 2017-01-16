@@ -14,6 +14,7 @@ SYNOPSIS
  [-t <timeout>] [-c <config_file>] [-i <interface>]
  [-b <local_addr>] [-a <user_name>] [-n <nofile>]
  [-L addr:port] [--mtu <MTU>]
+ [--plugin <plugin_name>] [--plugin_opts <plugin_options]
 
 DESCRIPTION
 -----------
@@ -112,11 +113,11 @@ Enable Multipath TCP.
 +
 Only available with MPTCP enabled Linux kernel.
 
---obfs <http|tls>::
-Enable HTTP or TLS obfuscating. (Experimental)
+--plugin <plugin_name>::
+Enable SIP003 plugin. (Experimental)
 
---obfs-host <hostname>::
-Specify the hostname for obfuscating. (Experimental)
+--plugin_opts <plugin_options>::
+Set SIP003 plugin options. (Experimental)
 
 -v::
 Enable verbose mode.

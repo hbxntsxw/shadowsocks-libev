@@ -356,16 +356,12 @@ usage()
 #ifdef __linux__
     printf(
         "       [--mptcp]                  Enable Multipath TCP on MPTCP Kernel.\n");
-#ifdef MODULE_REMOTE
-    printf(
-        "       [--firewall]               Setup firewall rules for auto blocking.\n");
 #endif
-#endif
+#ifndef __MINGW32__
     printf(
-        "       [--obfs <http|tls>]        Enable obfuscating: HTTP or TLS (Experimental).\n");
-#ifndef MODULE_REMOTE
+        "       [--plugin <name>]          Enable SIP003 plugin. (Experimental)\n");
     printf(
-        "       [--obfs-host <host_name>]  Hostname for obfuscating (Experimental).\n");
+        "       [--plugin-opts <options>]  Set SIP003 plugin options. (Experimental)\n");
 #endif
     printf("\n");
     printf(
