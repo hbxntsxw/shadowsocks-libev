@@ -202,7 +202,24 @@ read_jconf(const char *file)
             } else if (strcmp(name, "plugin") == 0) {
                 conf.plugin = to_string(value);
             } else if (strcmp(name, "plugin_opts") == 0) {
-                conf.plugin_opts = to_string(value);
+                if (value->type == json_object) {
+                    for (j = 0; j < value->u.object.length; j++) {
+                        if (j >= MAX_PLUGINOPTS_NUM) {
+                            break;
+                        }
+                        json_value *v = value->u.object.values[j].value;
+                        if (v->type == json_string) {
+                            conf.plugin_opts[j].name = ss_strndup(value->u.object.values[j].name,
+                                                                    value->u.object.values[j].name_length);
+                            conf.plugin_opts[j].value = to_string(v);
+                            conf.plugin_opts_num         = j + 1;
+                        }
+                    }
+                } else if (value->type == json_string) {
+                     conf.plugin_opts[0].value = to_string(value);
+                     conf.plugin_opts[0].name = "SS_PLUGIN_OPTIONS";
+                     conf.plugin_opts_num = 1;
+                }
             } else if (strcmp(name, "fast_open") == 0) {
                 check_json_value_type(value, json_boolean,
                         "invalid config file: option 'fast_open' must be a boolean");

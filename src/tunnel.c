@@ -759,7 +759,6 @@ main(int argc, char **argv)
     char *iface      = NULL;
 
     char *plugin      = NULL;
-    char *plugin_opts = NULL;
     char *plugin_host = NULL;
     char *plugin_port = NULL;
     char tmp_port[8];
@@ -770,6 +769,9 @@ main(int argc, char **argv)
 
     ss_addr_t tunnel_addr = { .host = NULL, .port = NULL };
     char *tunnel_addr_str = NULL;
+
+    int plugin_opts_num = 0;
+    ss_plugin_opts_t plugin_opts[MAX_PLUGINOPTS_NUM];
 
     int option_index                    = 0;
     static struct option long_options[] = {
@@ -803,7 +805,9 @@ main(int argc, char **argv)
             } else if (option_index == 2) {
                 plugin = optarg;
             } else if (option_index == 3) {
-                plugin_opts = optarg;
+                plugin_opts[0].value = optarg;
+                plugin_opts[0].name = "SS_PLUGIN_OPTIONS";
+                plugin_opts_num = 1;
             } else if (option_index == 4) {
                 usage();
                 exit(EXIT_SUCCESS);
@@ -906,6 +910,11 @@ main(int argc, char **argv)
             for (i = 0; i < remote_num; i++)
                 remote_addr[i] = conf->remote_addr[i];
         }
+        if (plugin_opts_num == 0) {
+            plugin_opts_num = conf->plugin_opts_num;
+            for (i = 0; i < plugin_opts_num; i++)
+                plugin_opts[i] = conf->plugin_opts[i];
+        }
         if (remote_port == NULL) {
             remote_port = conf->remote_port;
         }
@@ -929,9 +938,6 @@ main(int argc, char **argv)
         }
         if (plugin == NULL) {
             plugin = conf->plugin;
-        }
-        if (plugin_opts == NULL) {
-            plugin_opts = conf->plugin_opts;
         }
         if (auth == 0) {
             auth = conf->auth;
@@ -1028,8 +1034,9 @@ main(int argc, char **argv)
             snprintf(remote_str + len, buf_size - len, "|%s", remote_addr[i].host);
             len = strlen(remote_str);
         }
-        int err = start_plugin(plugin, plugin_opts, remote_str,
-                remote_port, plugin_host, plugin_port);
+
+        int err = start_plugin(plugin, remote_str,
+                remote_port, plugin_host, plugin_port, plugin_opts_num, plugin_opts);
         if (err) {
             FATAL("failed to start the plugin");
         }

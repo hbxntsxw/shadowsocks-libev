@@ -37,6 +37,7 @@
 
 #include "utils.h"
 #include "plugin.h"
+#include "jconf.h"
 
 #define CMD_RESRV_LEN 128
 
@@ -82,11 +83,12 @@ struct cork_stream_consumer plugin_log = {
 
 int
 start_plugin(const char *plugin,
-             const char *plugin_opts,
              const char *remote_host,
              const char *remote_port,
              const char *local_host,
-             const char *local_port)
+             const char *local_port,
+             int plugin_opts_num,
+             ss_plugin_opts_t *plugin_opts)
 {
     char *new_path = NULL;
     char *cmd      = NULL;
@@ -128,8 +130,9 @@ start_plugin(const char *plugin,
     cork_env_add(env, "SS_LOCAL_HOST", local_host);
     cork_env_add(env, "SS_LOCAL_PORT", local_port);
 
-    if (plugin_opts != NULL)
-        cork_env_add(env, "SS_PLUGIN_OPTIONS", plugin_opts);
+    for (int i = 0; i < plugin_opts_num; i++) {
+        cork_env_add(env, plugin_opts[i].name, plugin_opts[i].value);
+    }
 
     exec = cork_exec_new_with_params("sh", "-c", cmd, NULL);
 
@@ -204,7 +207,9 @@ start_plugin(const char *plugin,
              const char *remote_host,
              const char *remote_port,
              const char *local_host,
-             const char *local_port)
+             const char *local_port,
+             int plugin_opts_num,
+             ss_plugin_opts_t *plugin_opts)
 {
     FATAL("Plugin is not supported on MinGW.");
     return -1;

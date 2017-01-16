@@ -23,16 +23,19 @@
 #ifndef _PLUGIN_H
 #define _PLUGIN_H
 
+#include "jconf.h"
+
 #define PLUGIN_EXIT_ERROR  -2
 #define PLUGIN_EXIT_NORMAL -1
 #define PLUGIN_RUNNING      0
 
 int start_plugin(const char *plugin,
-                 const char *plugin_opts,
                  const char *remote_host,
                  const char *remote_port,
                  const char *local_host,
-                 const char *local_port);
+                 const char *local_port,
+                 int plugin_opts_num,
+                 ss_plugin_opts_t *plugin_opts);
 uint16_t get_local_port();
 void stop_plugin();
 int is_plugin_running();

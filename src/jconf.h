@@ -30,6 +30,8 @@
 #define MAX_REQUEST_TIMEOUT 60
 #define MIN_UDP_TIMEOUT 10
 
+#define MAX_PLUGINOPTS_NUM 255
+
 #define TCP_ONLY     0
 #define TCP_AND_UDP  1
 #define UDP_ONLY     3
@@ -45,10 +47,17 @@ typedef struct {
 } ss_port_password_t;
 
 typedef struct {
+    char *name;
+    char *value;
+} ss_plugin_opts_t;
+
+typedef struct {
     int remote_num;
     ss_addr_t remote_addr[MAX_REMOTE_NUM];
     int port_password_num;
     ss_port_password_t port_password[MAX_PORT_NUM];
+    int plugin_opts_num;
+    ss_plugin_opts_t plugin_opts[MAX_PLUGINOPTS_NUM];
     char *remote_port;
     char *local_addr;
     char *local_port;
@@ -57,7 +66,6 @@ typedef struct {
     char *timeout;
     char *user;
     char *plugin;
-    char *plugin_opts;
     int auth;
     int fast_open;
     int nofile;

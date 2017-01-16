@@ -1585,7 +1585,6 @@ main(int argc, char **argv)
     char *conf_path = NULL;
     char *iface     = NULL;
 
-    char *plugin_opts = NULL;
     char *plugin_port = NULL;
     char tmp_port[8];
 
@@ -1594,6 +1593,9 @@ main(int argc, char **argv)
 
     char *nameservers[MAX_DNS_NUM + 1];
     int nameserver_num = 0;
+
+    int plugin_opts_num = 0;
+    ss_plugin_opts_t plugin_opts[MAX_PLUGINOPTS_NUM];
 
     int option_index                    = 0;
     static struct option long_options[] = {
@@ -1634,7 +1636,9 @@ main(int argc, char **argv)
             } else if (option_index == 5) {
                 plugin = optarg;
             } else if (option_index == 6) {
-                plugin_opts = optarg;
+                plugin_opts[0].value = optarg;
+                plugin_opts[0].name = "SS_PLUGIN_OPTIONS";
+                plugin_opts_num = 1;
             } else if (option_index == 7) {
                 mptcp = 1;
                 LOGI("enable multipath TCP");
@@ -1727,6 +1731,11 @@ main(int argc, char **argv)
             for (i = 0; i < server_num; i++)
                 server_host[i] = conf->remote_addr[i].host;
         }
+        if (plugin_opts_num == 0) {
+            plugin_opts_num = conf->plugin_opts_num;
+            for (i = 0; i < plugin_opts_num; i++)
+                plugin_opts[i] = conf->plugin_opts[i];
+        }
         if (server_port == NULL) {
             server_port = conf->remote_port;
         }
@@ -1744,9 +1753,6 @@ main(int argc, char **argv)
         }
         if (plugin == NULL) {
             plugin = conf->plugin;
-        }
-        if (plugin_opts == NULL) {
-            plugin_opts = conf->plugin_opts;
         }
         if (auth == 0) {
             auth = conf->auth;
@@ -1902,8 +1908,8 @@ main(int argc, char **argv)
             len = strlen(server_str);
         }
 
-        int err = start_plugin(plugin, plugin_opts, server_str,
-                plugin_port, "127.0.0.1", server_port);
+        int err = start_plugin(plugin, server_str,
+                plugin_port, "127.0.0.1", server_port, plugin_opts_num, plugin_opts);
         if (err) {
             FATAL("failed to start the plugin");
         }

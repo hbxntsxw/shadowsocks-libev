@@ -884,7 +884,9 @@ main(int argc, char **argv)
     char *iface           = NULL;
     char *manager_address = NULL;
     char *plugin          = NULL;
-    char *plugin_opts     = NULL;
+
+    int plugin_opts_num = 0;
+    ss_plugin_opts_t plugin_opts[MAX_PLUGINOPTS_NUM];
 
     int auth      = 0;
     int fast_open = 0;
@@ -938,7 +940,9 @@ main(int argc, char **argv)
             } else if (option_index == 5) {
                 plugin = optarg;
             } else if (option_index == 6) {
-                plugin_opts = optarg;
+                plugin_opts[0].value = optarg;
+                plugin_opts[0].name = "SS_PLUGIN_OPTIONS";
+                plugin_opts_num = 1;
             } else if (option_index == 7) {
                 usage();
                 exit(EXIT_SUCCESS);
@@ -1050,8 +1054,10 @@ main(int argc, char **argv)
         if (plugin == NULL) {
             plugin = conf->plugin;
         }
-        if (plugin_opts == NULL) {
-            plugin_opts = conf->plugin_opts;
+        if (plugin_opts_num == 0) {
+            plugin_opts_num = conf->plugin_opts_num;
+            for (i = 0; i < plugin_opts_num; i++)
+                plugin_opts[i] = conf->plugin_opts[i];
         }
         if (ipv6first == 0) {
             ipv6first = conf->ipv6_first;
@@ -1133,7 +1139,7 @@ main(int argc, char **argv)
     manager.nameserver_num  = nameserver_num;
     manager.mtu             = mtu;
     manager.plugin          = plugin;
-    manager.plugin_opts     = plugin_opts;
+    manager.plugin_opts     = plugin_opts[0].value;
     manager.ipv6first       = ipv6first;
 #ifdef HAVE_SETRLIMIT
     manager.nofile = nofile;
