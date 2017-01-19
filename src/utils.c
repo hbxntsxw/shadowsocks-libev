@@ -357,9 +357,9 @@ usage()
     printf(
         "       [--mptcp]                  Enable Multipath TCP on MPTCP Kernel.\n");
 #endif
-#ifndef __MINGW32__
     printf(
         "       [--plugin <name>]          Enable SIP003 plugin. (Experimental)\n");
+#ifndef MODULE_REMOTE
     printf(
         "       [--plugin-opts <options>]  Set SIP003 plugin options. (Experimental)\n");
 #endif

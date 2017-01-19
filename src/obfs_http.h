@@ -1,5 +1,5 @@
 /*
- * acl.h - Define the ACL interface
+ * obfs_http.h - Interfaces of http obfuscating function
  *
  * Copyright (C) 2013 - 2016, Max Lv <max.c.lv@gmail.com>
  *
@@ -20,21 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PLUGIN_H
-#define _PLUGIN_H
+#ifndef OBFS_HTTP_H
+#define OBFS_HTTP_H
 
-#define PLUGIN_EXIT_ERROR  -2
-#define PLUGIN_EXIT_NORMAL -1
-#define PLUGIN_RUNNING      0
+#include "obfs.h"
 
-int start_plugin(const char *plugin,
-                 const char *plugin_opts,
-                 const char *remote_host,
-                 const char *remote_port,
-                 const char *local_host,
-                 const char *local_port);
-uint16_t get_local_port();
-void stop_plugin();
-int is_plugin_running();
+extern obfs_para_t *obfs_http;
 
-#endif // _PLUGIN_H
+#endif

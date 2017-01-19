@@ -50,11 +50,13 @@
 
 #include "http.h"
 #include "tls.h"
-#include "plugin.h"
+#include "obfs_http.h"
+#include "obfs_tls.h"
 #include "netutils.h"
 #include "utils.h"
 #include "common.h"
 #include "redir.h"
+#include "options.h"
 
 #ifndef EAGAIN
 #define EAGAIN EWOULDBLOCK
@@ -95,6 +97,8 @@ static int auth      = 0;
 #ifdef HAVE_SETRLIMIT
 static int nofile    = 0;
 #endif
+
+static obfs_para_t *obfs_para = NULL;
 
 static struct ev_signal sigint_watcher;
 static struct ev_signal sigterm_watcher;
@@ -268,6 +272,10 @@ server_recv_cb(EV_P_ ev_io *w, int revents)
         return;
     }
 
+    if (obfs_para) {
+        obfs_para->obfs_request(remote->buf, BUF_SIZE, server->obfs);
+    }
+
     int s = send(remote->fd, remote->buf->data, remote->buf->len, 0);
 
     if (s == -1) {
@@ -377,6 +385,15 @@ remote_recv_cb(EV_P_ ev_io *w, int revents)
     }
 
     server->buf->len = r;
+
+    if (obfs_para) {
+        if (obfs_para->deobfs_response(server->buf, BUF_SIZE, server->obfs)) {
+            LOGE("invalid obfuscating");
+            close_and_free_remote(EV_A_ remote);
+            close_and_free_server(EV_A_ server);
+            return;
+        }
+    }
 
     int err = ss_decrypt(server->buf, server->d_ctx, BUF_SIZE);
     if (err) {
@@ -494,6 +511,10 @@ remote_send_cb(EV_P_ ev_io *w, int revents)
                 close_and_free_remote(EV_A_ remote);
                 close_and_free_server(EV_A_ server);
                 return;
+            }
+
+            if (obfs_para) {
+                obfs_para->obfs_request(remote->buf, BUF_SIZE, server->obfs);
             }
 
             ev_io_start(EV_A_ & remote->recv_ctx->io);
@@ -615,6 +636,11 @@ new_server(int fd, int method)
     server->hostname     = NULL;
     server->hostname_len = 0;
 
+    if (obfs_para != NULL) {
+        server->obfs = (obfs_t *)ss_malloc(sizeof(obfs_t));
+        memset(server->obfs, 0, sizeof(obfs_t));
+    }
+
     if (method) {
         server->e_ctx = ss_malloc(sizeof(enc_ctx_t));
         server->d_ctx = ss_malloc(sizeof(enc_ctx_t));
@@ -634,6 +660,12 @@ new_server(int fd, int method)
 static void
 free_server(server_t *server)
 {
+    if (server->obfs != NULL) {
+        bfree(server->obfs->buf);
+        if (server->obfs->extra != NULL)
+            ss_free(server->obfs->extra);
+        ss_free(server->obfs);
+    }
     if (server->hostname != NULL) {
         ss_free(server->hostname);
     }
@@ -758,11 +790,6 @@ signal_cb(EV_P_ ev_signal *w, int revents)
 {
     if (revents & EV_SIGNAL) {
         switch (w->signum) {
-        case SIGCHLD:
-            if (!is_plugin_running())
-                LOGE("plugin service exit unexpectedly");
-            else
-                return;
         case SIGINT:
         case SIGTERM:
             ev_signal_stop(EV_DEFAULT, &sigint_watcher);
@@ -795,9 +822,7 @@ main(int argc, char **argv)
 
     char *plugin      = NULL;
     char *plugin_opts = NULL;
-    char *plugin_host = NULL;
-    char *plugin_port = NULL;
-    char tmp_port[8];
+    char *obfs_host   = NULL;
 
     int remote_num = 0;
     ss_addr_t remote_addr[MAX_REMOTE_NUM];
@@ -968,16 +993,32 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    if (plugin != NULL) {
-        uint16_t port = get_local_port();
-        if (port == 0) {
-            FATAL("failed to find a free port");
+    if (plugin != NULL && strcmp(plugin, "obfs-local") == 0) {
+        if (plugin_opts != NULL) {
+            plugin_opts = strdup(plugin_opts);
+            options_t opts;
+            int opt_num = parse_options(plugin_opts,
+                    strlen(plugin_opts), &opts);
+            for (i = 0; i < opt_num; i++) {
+                char *key = opts.keys[i];
+                char *value = opts.values[i];
+                if (key == NULL) continue;
+                size_t key_len = strlen(key);
+                if (key_len == 0) continue;
+                if (key_len == 1) {
+                    continue;
+                } else {
+                    if (strcmp(key, "obfs") == 0) {
+                        if (strcmp(value, obfs_http->name) == 0)
+                            obfs_para = obfs_http;
+                        else if (strcmp(value, obfs_tls->name) == 0)
+                            obfs_para = obfs_tls;
+                    } else if (strcmp(key, "obfs-host") == 0) {
+                        obfs_host = value;
+                    }
+                }
+            }
         }
-        snprintf(tmp_port, 8, "%d", port);
-        plugin_host = "127.0.0.1";
-        plugin_port = tmp_port;
-
-        LOGI("plugin \"%s\" enabled", plugin);
     }
 
     if (method == NULL) {
@@ -1018,21 +1059,15 @@ main(int argc, char **argv)
         LOGI("onetime authentication enabled");
     }
 
-    if (plugin != NULL) {
-        int len = 0;
-        size_t buf_size = 256 * remote_num;
-        char *remote_str = ss_malloc(buf_size);
+    if (obfs_para) {
+        if (obfs_host != NULL)
+            obfs_para->host = obfs_host;
+        else
+            obfs_para->host = "cloudfront.net";
 
-        snprintf(remote_str, buf_size, "%s", remote_addr[0].host);
-        for (int i = 1; i < remote_num; i++) {
-            snprintf(remote_str + len, buf_size - len, "|%s", remote_addr[i].host);
-            len = strlen(remote_str);
-        }
-        int err = start_plugin(plugin, plugin_opts, remote_str,
-                remote_port, plugin_host, plugin_port);
-        if (err) {
-            FATAL("failed to start the plugin");
-        }
+        obfs_para->port = atoi(remote_port);
+        LOGI("obfuscating enabled");
+        LOGI("obfuscating hostname: %s", obfs_host);
     }
 
     // ignore SIGPIPE
@@ -1059,18 +1094,12 @@ main(int argc, char **argv)
         char *host = remote_addr[i].host;
         char *port = remote_addr[i].port == NULL ? remote_port :
                      remote_addr[i].port;
-        if (plugin != NULL) {
-            host = plugin_host;
-            port = plugin_port;
-        }
         struct sockaddr_storage *storage = ss_malloc(sizeof(struct sockaddr_storage));
         memset(storage, 0, sizeof(struct sockaddr_storage));
         if (get_sockaddr(host, port, storage, 1, ipv6first) == -1) {
             FATAL("failed to resolve the provided hostname");
         }
         listen_ctx.remote_addr[i] = (struct sockaddr *)storage;
-
-        if (plugin != NULL) break;
     }
     listen_ctx.timeout = atoi(timeout);
     listen_ctx.method  = m;
@@ -1127,10 +1156,6 @@ main(int argc, char **argv)
     }
 
     ev_run(loop, 0);
-
-    if (plugin != NULL) {
-        stop_plugin();
-    }
 
     return 0;
 }
