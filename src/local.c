@@ -101,7 +101,6 @@ int vpn        = 0;
 uint64_t tx    = 0;
 uint64_t rx    = 0;
 ev_tstamp last = 0;
-char *prefix;
 #endif
 
 static int acl       = 0;
@@ -1241,7 +1240,7 @@ main(int argc, char **argv)
     USE_TTY();
 
 #ifdef ANDROID
-    while ((c = getopt_long(argc, argv, "f:s:p:l:k:t:m:i:c:b:a:n:P:huUvVA6",
+    while ((c = getopt_long(argc, argv, "f:s:p:l:k:t:m:i:c:b:a:n:huUvVA6",
                             long_options, &option_index)) != -1) {
 #else
     while ((c = getopt_long(argc, argv, "f:s:p:l:k:t:m:i:c:b:a:n:huUvA6",
@@ -1332,9 +1331,6 @@ main(int argc, char **argv)
 #ifdef ANDROID
         case 'V':
             vpn = 1;
-            break;
-        case 'P':
-            prefix = optarg;
             break;
 #endif
         case '?':
