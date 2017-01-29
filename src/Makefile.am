@@ -31,8 +31,8 @@ sni_src = http.c \
           rule.c
 
 crypto_src = crypto.c \
-			 aead.c \
-			 stream.c
+             aead.c \
+             stream.c
 
 plugin_src = plugin.c
 
@@ -44,8 +44,8 @@ ss_local_SOURCES = utils.c \
                    acl.c \
                    netutils.c \
                    local.c \
-				   $(crypto_src) \
-				   $(plugin_src) \
+                   $(crypto_src) \
+                   $(plugin_src) \
                    $(sni_src)
 
 ss_tunnel_SOURCES = utils.c \
@@ -55,8 +55,8 @@ ss_tunnel_SOURCES = utils.c \
                     cache.c \
                     netutils.c \
                     tunnel.c \
-					$(crypto_src) \
-				    $(plugin_src)
+                    $(crypto_src) \
+                    $(plugin_src)
 
 ss_server_SOURCES = utils.c \
                     netutils.c \
@@ -67,8 +67,8 @@ ss_server_SOURCES = utils.c \
                     acl.c \
                     resolv.c \
                     server.c \
-					$(crypto_src) \
-				    $(plugin_src) \
+                    $(crypto_src) \
+                    $(plugin_src) \
                     $(sni_src)
 
 ss_manager_SOURCES = utils.c \
@@ -113,8 +113,8 @@ ss_redir_SOURCES = utils.c \
                    cache.c \
                    udprelay.c \
                    redir.c \
-				   $(crypto_src) \
-				   $(plugin_src) \
+                   $(crypto_src) \
+                   $(plugin_src) \
                    $(sni_src)
 
 ss_redir_CFLAGS = $(AM_CFLAGS) -DMODULE_REDIR
@@ -134,6 +134,6 @@ libshadowsocks_libev_la_LIBADD = $(ss_local_LDADD)
 include_HEADERS = shadowsocks.h
 
 noinst_HEADERS = acl.h crypto.h stream.h json.h netutils.h redir.h server.h tls.h uthash.h \
-				 cache.h http.h local.h plugin.h resolv.h tunnel.h utils.h \
-				 common.h jconf.h manager.h protocol.h rule.h socks5.h udprelay.h
+                 cache.h http.h local.h plugin.h resolv.h tunnel.h utils.h \
+                 common.h jconf.h manager.h protocol.h rule.h socks5.h udprelay.h
 EXTRA_DIST = ss-nat
