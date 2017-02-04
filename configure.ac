@@ -304,10 +304,6 @@ AC_CHECK_LIB(socket, connect)
 dnl Checks for library functions.
 AC_CHECK_FUNCS([malloc memset socket])
 
-dnl Add define for libudns to enable IPv6 support
-dnl This is an option defined in the origin configure script
-AC_DEFINE([HAVE_IPv6], [1], [Enable IPv6 support in libudns])
-
 AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
     AC_CHECK_LIB([sodium], [sodium_init], ,[
        AC_MSG_ERROR([Couldn't find libsodium. Try installing libsodium-dev@<:@el@:>@.])
@@ -315,11 +311,10 @@ AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
   ],
   [AC_CONFIG_SUBDIRS([libsodium])])
 
-AC_CONFIG_FILES([ shadowsocks-libev.pc
-                 Makefile
-                 libcork/Makefile
-                 libipset/Makefile
-                 src/Makefile])
+dnl Add define for libudns to enable IPv6 support
+dnl This is an option defined in the origin configure script
+AC_DEFINE([HAVE_IPv6], [1], [Enable IPv6 support in libudns])
+
 AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
     AC_CHECK_LIB([udns], [dns_dnlen], ,[AC_MSG_ERROR([Couldn't find libudns. Try installing libudns-dev or udns-devel.])])
     AC_CHECK_LIB([ev], [ev_loop_destroy], ,[AC_MSG_ERROR([Couldn't find libev. Try installing libev-dev@<:@el@:>@.])])
@@ -330,5 +325,11 @@ AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
 AM_COND_IF([ENABLE_DOCUMENTATION],
   [AC_CONFIG_FILES([doc/Makefile])
 ])
+
+AC_CONFIG_FILES([ shadowsocks-libev.pc
+                 Makefile
+                 libcork/Makefile
+                 libipset/Makefile
+                 src/Makefile])
 
 AC_OUTPUT
