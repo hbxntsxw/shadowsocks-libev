@@ -23,7 +23,12 @@
 #ifndef _CRYPTO_H
 #define _CRYPTO_H
 
+#ifdef __MINGW32__
+#include "win32.h"
+#else
 #include <sys/socket.h>
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
