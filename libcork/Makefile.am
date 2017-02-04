@@ -8,7 +8,10 @@ ds_src = ds/array.c ds/bitset.c ds/buffer.c ds/dllist.c \
 		 ds/file-stream.c ds/hash-table.c ds/managed-buffer.c \
 		 ds/ring-buffer.c ds/slice.c
 posix_src = posix/directory-walker.c posix/env.c posix/exec.c \
-			posix/files.c posix/process.c posix/subprocess.c
+			posix/files.c posix/process.c
+if !BUILD_WINCOMPAT
+posix_src += posix/subprocess.c
+endif
 pthreads_src = pthreads/thread.c
 
 libcork_la_SOURCES = $(cli_src) $(core_src) $(ds_src) \
