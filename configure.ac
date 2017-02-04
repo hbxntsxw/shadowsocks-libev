@@ -2,8 +2,8 @@ dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.67])
-AC_INIT([shadowsocks-libev], [2.6.2], [max.c.lv@gmail.com])
-AC_CONFIG_SRCDIR([src/encrypt.c])
+AC_INIT([shadowsocks-libev], [2.6.3], [max.c.lv@gmail.com])
+AC_CONFIG_SRCDIR([src/crypto.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR(auto)
 AC_CONFIG_MACRO_DIR([m4])
@@ -38,19 +38,6 @@ AC_ARG_ENABLE(
     esac], [enable_system_shared_lib=false])
 AM_CONDITIONAL([USE_SYSTEM_SHARED_LIB], [test x$enable_system_shared_lib = xtrue])
 
-dnl Checks for crypto library
-AC_ARG_WITH(
-  [crypto-library],
-  [AS_HELP_STRING([--with-crypto-library=library], [build with the given crypto library, TYPE=openssl|polarssl|mbedtls @<:@default=openssl@:>@])],
-  [
-    case "${withval}" in
-      openssl|polarssl|mbedtls) ;;
-      *) AC_MSG_ERROR([bad value ${withval} for --with-crypto-library]) ;;
-    esac
-  ],
-  [with_crypto_library="openssl"]
-)
-
 AC_ARG_ENABLE([documentation],
   AS_HELP_STRING([--disable-documentation], [do not build documentation]),
   [disable_documentation=true],
@@ -77,9 +64,7 @@ AC_PROG_MAKE_SET
 AC_LANG_SOURCE
 
 dnl Checks for libev
-AM_COND_IF([USE_SYSTEM_SHARED_LIB],
-  [],
-  [m4_include([libev/libev.m4])])
+AM_COND_IF([USE_SYSTEM_SHARED_LIB],[],[m4_include([libev/libev.m4])])
 
 dnl Add library for mingw
 case $host in
@@ -97,22 +82,9 @@ esac
 dnl Checks for TLS
 AX_TLS([:], [:])
 
-dnl Checks for crypto library
-case "${with_crypto_library}" in
-  openssl)
-    ss_ZLIB
-    ss_OPENSSL
-    AC_DEFINE([USE_CRYPTO_OPENSSL], [1], [Use OpenSSL library])
-    ;;
-  polarssl)
-    ss_POLARSSL
-    AC_DEFINE([USE_CRYPTO_POLARSSL], [1], [Use PolarSSL library])
-    ;;
-  mbedtls)
-    ss_MBEDTLS
-    AC_DEFINE([USE_CRYPTO_MBEDTLS], [1], [Use mbed TLS library])
-    ;;
-esac
+dnl Checks for crypto libraries
+ss_MBEDTLS
+AM_COND_IF([USE_SYSTEM_SHARED_LIB],[ss_SODIUM],[AC_CONFIG_SUBDIRS([libsodium])])
 
 dnl Checks for Apple CommonCrypto API
 AC_ARG_ENABLE(applecc,
@@ -303,13 +275,6 @@ AC_CHECK_LIB(socket, connect)
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS([malloc memset socket])
-
-AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
-    AC_CHECK_LIB([sodium], [sodium_init], ,[
-       AC_MSG_ERROR([Couldn't find libsodium. Try installing libsodium-dev@<:@el@:>@.])
-    ])
-  ],
-  [AC_CONFIG_SUBDIRS([libsodium])])
 
 dnl Add define for libudns to enable IPv6 support
 dnl This is an option defined in the origin configure script

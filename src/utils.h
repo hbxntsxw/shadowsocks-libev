@@ -1,7 +1,7 @@
 /*
  * utils.h - Misc utilities
  *
- * Copyright (C) 2013 - 2016, Max Lv <max.c.lv@gmail.com>
+ * Copyright (C) 2013 - 2017, Max Lv <max.c.lv@gmail.com>
  *
  * This file is part of the shadowsocks-libev.
  *
@@ -59,7 +59,7 @@
     ((void)__android_log_print(ANDROID_LOG_ERROR, "shadowsocks", \
                                __VA_ARGS__))
 
-#else
+#else // not ANDROID
 
 #define STR(x) # x
 #define TOSTR(x) STR(x)
@@ -67,13 +67,9 @@
 #ifdef LIB_ONLY
 
 extern FILE *logfile;
-
 #define TIME_FORMAT "%Y-%m-%d %H:%M:%S"
-
 #define USE_TTY()
-
 #define USE_SYSLOG(ident)
-
 #define USE_LOGFILE(ident)                                     \
     do {                                                       \
         if (ident != NULL) { logfile = fopen(ident, "w+"); } } \
@@ -83,7 +79,6 @@ extern FILE *logfile;
     do {                                            \
         if (logfile != NULL) { fclose(logfile); } } \
     while (0)
-
 #define LOGI(format, ...)                                                        \
     do {                                                                         \
         if (logfile != NULL) {                                                   \
@@ -94,7 +89,6 @@ extern FILE *logfile;
             fflush(logfile); }                                                   \
     }                                                                            \
     while (0)
-
 #define LOGE(format, ...)                                        \
     do {                                                         \
         if (logfile != NULL) {                                   \
@@ -133,10 +127,9 @@ extern FILE *logfile;
         fflush(stderr); }                                                    \
     while (0)
 
-#else
+#else // not LIB_ONLY
 
 #include <syslog.h>
-
 extern int use_tty;
 #define USE_TTY()                        \
     do {                                 \
@@ -191,10 +184,9 @@ extern int use_syslog;
         } }                                                                       \
     while (0)
 
-#endif
-/* _WIN32 */
+#endif // if LIB_ONLY
 
-#endif
+#endif // if ANDROID
 
 #ifdef __MINGW32__
 
@@ -230,3 +222,4 @@ void *ss_realloc(void *ptr, size_t new_size);
     } while (0)
 
 #endif // _UTILS_H
+
