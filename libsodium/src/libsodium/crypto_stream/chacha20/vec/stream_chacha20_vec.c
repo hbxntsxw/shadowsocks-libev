@@ -16,7 +16,7 @@
 
 #define CHACHA_RNDS 20
 
-typedef unsigned int vec __attribute__((vector_size(16)));
+typedef unsigned int vec __attribute__ ((vector_size(16)));
 
 #include <emmintrin.h>
 #include <tmmintrin.h>
@@ -97,13 +97,20 @@ typedef struct chacha_ctx chacha_ctx;
 static void
 chacha_ivsetup(chacha_ctx *ctx, const uint8_t *iv, uint64_t ic)
 {
-    const vec s3 = {
-        (uint32_t) ic,
-        (uint32_t) (ic >> 32),
-        ((const uint32_t *) (const void *) iv)[0],
-        ((const uint32_t *) (const void *) iv)[1]
-    };
-    ctx->s3 = s3;
+    uint32_t iv_low;
+    uint32_t iv_high;
+
+    memcpy(&iv_low, iv, 4);
+    memcpy(&iv_high, iv + 4, 4);
+    {
+        const vec s3 = {
+            (uint32_t) ic,
+            (uint32_t) (ic >> 32),
+            iv_low,
+            iv_high
+        };
+        ctx->s3 = s3;
+    }
 }
 
 static void
@@ -138,7 +145,7 @@ chacha_encrypt_bytes(chacha_ctx *ctx, const uint8_t *in, uint8_t *out,
     unsigned long long  i;
 
     if (inlen > 64ULL * (1ULL << 32) - 64ULL) {
-        abort();
+        abort(); /* LCOV_EXCL_LINE */
     }
     s0 = LOAD_ALIGNED(chacha_const);
     s1 = ctx->s1;
