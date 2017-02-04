@@ -6,19 +6,20 @@ if !USE_SYSTEM_SHARED_LIB
 AM_CFLAGS += -I$(top_srcdir)/libev
 AM_CFLAGS += -I$(top_srcdir)/libudns
 AM_CFLAGS += -I$(top_srcdir)/libsodium/src/libsodium/include
-endif
 AM_CFLAGS += -I$(top_srcdir)/libipset/include
 AM_CFLAGS += -I$(top_srcdir)/libcork/include
+endif
 AM_CFLAGS += $(LIBPCRE_CFLAGS)
 
-SS_COMMON_LIBS = $(top_builddir)/libipset/libipset.la \
-                 $(top_builddir)/libcork/libcork.la \
-                 $(INET_NTOP_LIB) $(LIBPCRE_LIBS)
-if USE_SYSTEM_SHARED_LIB
-SS_COMMON_LIBS += -lev -lsodium -lm
-else
-SS_COMMON_LIBS += $(top_builddir)/libev/libev.la \
+SS_COMMON_LIBS = $(INET_NTOP_LIB) $(LIBPCRE_LIBS)
+if !USE_SYSTEM_SHARED_LIB
+SS_COMMON_LIBS += $(top_builddir)/libipset/libipset.la \
+                  $(top_builddir)/libcork/libcork.la \
+                  $(top_builddir)/libev/libev.la \
                   $(top_builddir)/libsodium/src/libsodium/libsodium.la
+else
+SS_COMMON_LIBS += -lcork -lcorkipset
+SS_COMMON_LIBS += -lev -lsodium -lm
 endif
 
 bin_PROGRAMS = ss-local ss-tunnel
