@@ -49,7 +49,6 @@
 #ifdef ANDROID
 
 #include <android/log.h>
-
 #define USE_TTY()
 #define USE_SYSLOG(ident)
 #define LOGI(...)                                                \
@@ -101,45 +100,19 @@ extern FILE *logfile;
     }                                                            \
     while (0)
 
-#elif defined(_WIN32)
-
-#define TIME_FORMAT "%Y-%m-%d %H:%M:%S"
-
-#define USE_TTY()
-
-#define USE_SYSLOG(ident)
-
-#define LOGI(format, ...)                                                   \
-    do {                                                                    \
-        time_t now = time(NULL);                                            \
-        char timestr[20];                                                   \
-        strftime(timestr, 20, TIME_FORMAT, localtime(&now));                \
-        fprintf(stderr, " %s INFO: " format "\n", timestr, ## __VA_ARGS__); \
-        fflush(stderr); }                                                   \
-    while (0)
-
-#define LOGE(format, ...)                                                    \
-    do {                                                                     \
-        time_t now = time(NULL);                                             \
-        char timestr[20];                                                    \
-        strftime(timestr, 20, TIME_FORMAT, localtime(&now));                 \
-        fprintf(stderr, " %s ERROR: " format "\n", timestr, ## __VA_ARGS__); \
-        fflush(stderr); }                                                    \
-    while (0)
-
 #else // not LIB_ONLY
 
 #include <syslog.h>
 extern int use_tty;
+extern int use_syslog;
+
+#define HAS_SYSLOG
+#define TIME_FORMAT "%F %T"
+
 #define USE_TTY()                        \
     do {                                 \
         use_tty = isatty(STDERR_FILENO); \
-    } while (0)                          \
-
-#define HAS_SYSLOG
-extern int use_syslog;
-
-#define TIME_FORMAT "%F %T"
+    } while (0)
 
 #define USE_SYSLOG(ident)                          \
     do {                                           \
@@ -188,18 +161,7 @@ extern int use_syslog;
 
 #endif // if ANDROID
 
-#ifdef __MINGW32__
-
-#ifdef ERROR
-#undef ERROR
-#endif
-#define ERROR(s) ss_error(s)
-
-#else
-
 void ERROR(const char *s);
-
-#endif
 
 char *ss_itoa(int i);
 int ss_isnumeric(const char *s);
