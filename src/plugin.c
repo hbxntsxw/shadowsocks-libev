@@ -312,11 +312,12 @@ int is_plugin_running()
 
 int
 start_plugin(const char *plugin,
-             const char *plugin_opts,
-             const char *remote_host,
-             const char *remote_port,
-             const char *local_host,
-             const char *local_port)
+                 const char *plugin_opts,
+                 const char *remote_host,
+                 const char *remote_port,
+                 const char *local_host,
+                 const char *local_port,
+                 enum plugin_mode mode)
 {
     FATAL("Plugin is not supported on MinGW.");
     return -1;
