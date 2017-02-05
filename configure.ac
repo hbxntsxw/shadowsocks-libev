@@ -289,14 +289,11 @@ AM_COND_IF([USE_SYSTEM_SHARED_LIB],[
   [AC_CONFIG_FILES([libudns/Makefile
                  libev/Makefile])])
 
-AC_CONFIG_FILES([shadowsocks-libev.pc
+AC_CONFIG_FILES([ shadowsocks-libev.pc
                  Makefile
+                 libcork/Makefile
+                 libipset/Makefile
                  src/Makefile])
-
-AM_COND_IF([USE_SYSTEM_SHARED_LIB],
-		   [],
-		   [AC_CONFIG_FILES([libcork/Makefile
-							 libipset/Makefile])])
 
 AM_COND_IF([ENABLE_DOCUMENTATION],
   [AC_CONFIG_FILES([doc/Makefile])
