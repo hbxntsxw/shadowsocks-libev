@@ -141,7 +141,6 @@ dump(char *tag, char *text, int len)
         printf("0x%02x ", (uint8_t)text[i]);
     printf("\n");
 }
-
 #endif
 
 const char *supported_aead_ciphers[AEAD_CIPHER_NUM] = {
@@ -694,7 +693,7 @@ aead_decrypt(buffer_t *ciphertext, cipher_ctx_t *cipher_ctx, size_t capacity)
 }
 
 cipher_t *
-aead_key_init(int method, const char *pass)
+aead_key_init(int method, const char *pass, const char *key)
 {
     if (method < AES128GCM || method >= AEAD_CIPHER_NUM) {
         LOGE("aead_key_init(): Illegal method");
@@ -727,8 +726,12 @@ aead_key_init(int method, const char *pass)
         FATAL("Cannot initialize cipher");
     }
 
-    cipher->key_len = crypto_derive_key(cipher, pass, cipher->key,
-                                        supported_aead_ciphers_key_size[method], 2);
+    if (key != NULL)
+        cipher->key_len = crypto_parse_key(key, cipher->key,
+                supported_aead_ciphers_key_size[method]);
+    else
+        cipher->key_len = crypto_derive_key(key, cipher->key,
+                supported_aead_ciphers_key_size[method]);
 
     if (cipher->key_len == 0) {
         FATAL("Cannot generate key and nonce");
@@ -742,7 +745,7 @@ aead_key_init(int method, const char *pass)
 }
 
 cipher_t *
-aead_init(const char *pass, const char *method)
+aead_init(const char *pass, const char *key, const char *method)
 {
     int m = AES128GCM;
     if (method != NULL) {
@@ -756,5 +759,6 @@ aead_init(const char *pass, const char *method)
             m = AES256GCM;
         }
     }
-    return aead_key_init(m, pass);
+    return aead_key_init(m, pass, key);
 }
+
