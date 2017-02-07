@@ -29,8 +29,10 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#ifndef __MINGW32__
 #include <pwd.h>
 #include <grp.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -54,12 +56,15 @@ FILE *logfile;
 int use_syslog = 0;
 #endif
 
+#ifndef __MINGW32__
 void
 ERROR(const char *s)
 {
     char *msg = strerror(errno);
     LOGE("%s: %s", s, msg);
 }
+
+#endif
 
 int use_tty = 1;
 
@@ -100,6 +105,7 @@ ss_isnumeric(const char *s) {
 int
 run_as(const char *user)
 {
+#ifndef __MINGW32__
     if (user[0]) {
         /* Convert user to a long integer if it is a non-negative number.
          * -1 means it is a user name. */
@@ -194,6 +200,7 @@ run_as(const char *user)
 #endif
     }
 
+#endif // __MINGW32__
     return 1;
 }
 
@@ -358,10 +365,12 @@ usage()
     printf(
         "       [--key <key_in_base64>]    Key of your remote server.\n");
 #endif
+#ifndef __MINGW32__
     printf(
         "       [--plugin <name>]          Enable SIP003 plugin. (Experimental)\n");
     printf(
         "       [--plugin-opts <options>]  Set SIP003 plugin options. (Experimental)\n");
+#endif
     printf("\n");
     printf(
         "       [-v]                       Verbose mode.\n");
@@ -373,6 +382,7 @@ usage()
 void
 daemonize(const char *path)
 {
+#ifndef __MINGW32__
     /* Our process ID and Session ID */
     pid_t pid, sid;
 
@@ -417,6 +427,7 @@ daemonize(const char *path)
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
+#endif
 }
 
 #ifdef HAVE_SETRLIMIT
