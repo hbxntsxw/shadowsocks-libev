@@ -11,7 +11,7 @@ created by [@clowwindy](https://github.com/clowwindy), and maintained by
 
 Current version: 3.0.1 | [Changelog](debian/changelog)
 
-Travis CI: [![Travis CI](https://travis-ci.org/shadowsocks/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/shadowsocks/shadowsocks-libev)
+Travis CI: [![Travis CI](https://travis-ci.org/Windendless/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/Windendless/shadowsocks-libev)
 
 ## Features
 
@@ -32,22 +32,14 @@ refer to the [Wiki page](https://github.com/shadowsocks/shadowsocks/wiki/Feature
 To get the latest source code, you should also update the submodules as following:
 
 ```bash
-git clone https://github.com/shadowsocks/shadowsocks-libev.git
+git clone https://github.com/Windendless/shadowsocks-libev.git
 cd shadowsocks-libev
-git submodule update --init --recursive
 ```
 
-### Build and install the latest mbedTLS and libsodium
+### Build and install the latest mbedTLS
 
 ```bash
-export LIBSODIUM_VER=1.0.11
 export MBEDTLS_VER=2.4.0
-wget https://download.libsodium.org/libsodium/releases/libsodium-$LIBSODIUM_VER.tar.gz
-tar xvf libsodium-$LIBSODIUM_VER.tar.gz
-pushd libsodium-$LIBSODIUM_VER
-./configure --prefix=/usr && make
-sudo make install
-popd
 wget https://tls.mbed.org/download/mbedtls-$MBEDTLS_VER-gpl.tgz
 tar xvf mbedtls-$MBEDTLS_VER-gpl.tgz
 pushd mbedtls-$MBEDTLS_VER
