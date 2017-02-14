@@ -52,6 +52,7 @@ popd
 
 ### Distribution-specific guide
 
+- [Windows](#windows)
 - [Debian & Ubuntu](#debian--ubuntu)
     + [Install from repository](#install-from-repository)
     + [Build deb package from source](#build-deb-package-from-source)
@@ -66,7 +67,6 @@ popd
 - [FreeBSD](#freebsd)
 - [OpenWRT](#openwrt)
 - [OS X](#os-x)
-- [Windows](#windows)
 
 * * *
 
@@ -74,6 +74,54 @@ popd
 
 For a complete list of avaliable configure-time option,
 try `configure --help`.
+
+### Windows
+
+#### Build from source with centos
+
+If you are using CentOS 7, you need to install these prequirement to build from source code
+
+```bash 
+yum install epel-release -y
+yum install gcc gettext autoconf libtool automake make  -y
+yum install mingw64-gcc mingw64-headers mingw64-winpthreads-static mingw64-binutils
+```
+
+rebuild mbedTLS
+
+```bash
+pushd mbedtls-2.3.0/
+make clean
+AR=x86_64-w64-mingw32-ar CC=x86_64-w64-mingw32-gcc WINDOWS_BUILD=1 make
+WINDOWS_BUILD=1 make install DESTDIR="$HOME/prebuilt/mbedtls"
+popd
+```
+
+download pcre source tarball to the home directory, and build it like this (may take a few minutes):
+
+```bash
+curl https://jaist.dl.sourceforge.NET/project/pcre/pcre/8.39/pcre-8.39.tar.gz | tar xvz
+pushd pcre-8.39/
+./configure --host=x86_64-w64-mingw32 --disable-cpp --disable-shared --prefix="$HOME/prebuilt/pcre"
+make
+make install
+popd
+```
+
+Then, build the binary using the commands below, and all .exe files will be built at $HOME/dist-build/bin:
+
+```bash
+./autogen.sh
+./configure --disable-documentation --host=x86_64-w64-mingw32 --prefix="$HOME/dist-build" \
+--with-mbedtls="$HOME/prebuilt/mbedtls" \
+--with-pcre="$HOME/prebuilt/pcre"
+make && make install
+
+cd $HOME/dist-build/bin
+cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libssp-0.dll .
+
+x86_64-w64-mingw32-strip ss-local.exe ss-tunnel.exe libwinpthread-1.dll libssp-0.dll
+```
 
 ### Debian & Ubuntu
 
