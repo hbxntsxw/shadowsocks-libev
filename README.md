@@ -11,7 +11,7 @@ created by [@clowwindy](https://github.com/clowwindy), and maintained by
 
 Current version: 3.0.2 | [Changelog](debian/changelog)
 
-Travis CI: [![Travis CI](https://travis-ci.org/shadowsocks/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/shadowsocks/shadowsocks-libev)
+Travis CI: [![Travis CI](https://travis-ci.org/Windendless/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/Windendless/shadowsocks-libev)
 
 ## Features
 
@@ -32,31 +32,14 @@ refer to the [Wiki page](https://github.com/shadowsocks/shadowsocks/wiki/Feature
 To get the latest source code, you should also update the submodules as following:
 
 ```bash
-git clone https://github.com/shadowsocks/shadowsocks-libev.git
+git clone https://github.com/Windendless/shadowsocks-libev.git
 cd shadowsocks-libev
-git submodule update --init --recursive
 ```
 
-### Build and install with recent mbedTLS and libsodium
-
-You have to install libsodium 1.0.8 or later before building.
-
-If your system is too old to provide libmbedtls and libsodium (later than **v1.0.8**),
-you will need to either install those libraries manually or upgrade your system.
-
-If your system provides with those libraries, you **should** **not** install them
-from source. You should jump this section and install them from distribution
-repository instead.
+### Build and install the latest mbedTLS
 
 ```bash
-export LIBSODIUM_VER=1.0.11
 export MBEDTLS_VER=2.4.0
-wget https://download.libsodium.org/libsodium/releases/libsodium-$LIBSODIUM_VER.tar.gz
-tar xvf libsodium-$LIBSODIUM_VER.tar.gz
-pushd libsodium-$LIBSODIUM_VER
-./configure --prefix=/usr && make
-sudo make install
-popd
 wget https://tls.mbed.org/download/mbedtls-$MBEDTLS_VER-gpl.tgz
 tar xvf mbedtls-$MBEDTLS_VER-gpl.tgz
 pushd mbedtls-$MBEDTLS_VER
@@ -226,10 +209,7 @@ In general, you need the following build dependencies:
 * gettext
 * pkg-config
 * libmbedtls
-* libsodium
 * libpcre3 (old pcre library)
-* libev
-* libudns
 * asciidoc (for documentation only)
 * xmlto (for documentation only)
 
@@ -238,7 +218,7 @@ e.g. Ubuntu, Debian or Linux Mint, you might install build dependencies like thi
 
 ```bash
 # Debian / Ubuntu
-sudo apt-get install --no-install-recommends gettext build-essential autoconf libtool libpcre3-dev asciidoc xmlto libev-dev libudns-dev automake libmbedtls-dev
+sudo apt-get install --no-install-recommends gettext build-essential autoconf libtool libpcre3-dev asciidoc xmlto automake libmbedtls-dev
 # CentOS / Fedora / RHEL
 sudo yum install gettext gcc autoconf libtool automake make asciidoc xmlto udns-devel libev-devel
 # Arch
