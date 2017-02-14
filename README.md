@@ -112,15 +112,15 @@ Then, build the binary using the commands below, and all .exe files will be buil
 
 ```bash
 ./autogen.sh
-./configure --disable-documentation --host=x86_64-w64-mingw32 --prefix="$HOME/dist-build" \
+./configure --disable-documentation --host=x86_64-w64-mingw32 --prefix="$HOME/dist-build" --disable-ssp \
 --with-mbedtls="$HOME/prebuilt/mbedtls" \
 --with-pcre="$HOME/prebuilt/pcre"
 make && make install
 
 cd $HOME/dist-build/bin
-cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libssp-0.dll .
+cp /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libwinpthread-1.dll .
 
-x86_64-w64-mingw32-strip ss-local.exe ss-tunnel.exe libwinpthread-1.dll libssp-0.dll
+x86_64-w64-mingw32-strip ss-local.exe ss-tunnel.exe libwinpthread-1.dll
 ```
 
 ### Debian & Ubuntu
