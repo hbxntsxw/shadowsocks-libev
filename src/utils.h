@@ -189,6 +189,8 @@ extern int use_syslog;
 
 #ifdef __MINGW32__
 
+#define posix_memalign(p, a, s) (12)
+
 #ifdef ERROR
 #undef ERROR
 #endif
