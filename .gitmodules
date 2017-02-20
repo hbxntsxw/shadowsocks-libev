@@ -12,7 +12,7 @@
     ignore = dirty
 [submodule "libcork"]
 	path = libcork
-	url = https://github.com/shadowsocks/libcork.git
+	url = https://github.com/Windendless/libcork.git
     ignore = dirty
 [submodule "libipset"]
 	path = libipset
