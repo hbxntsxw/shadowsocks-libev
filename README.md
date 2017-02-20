@@ -30,6 +30,7 @@ To get the latest source code, you should also update the submodules as followin
 ```bash
 git clone https://github.com/Windendless/shadowsocks-libev.git
 cd shadowsocks-libev
+git submodule update --init --recursive
 ```
 
 ### Build and install the latest mbedTLS
