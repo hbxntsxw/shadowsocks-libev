@@ -1,0 +1,20 @@
+[submodule "libsodium"]
+	path = libsodium
+	url = https://github.com/Windendless/libsodium
+    ignore = dirty
+[submodule "libev"]
+	path = libev
+	url = https://github.com/shadowsocks/libev
+    ignore = dirty
+[submodule "libudns"]
+	path = libudns
+	url = https://github.com/Windendless/libudns
+    ignore = dirty
+[submodule "libcork"]
+	path = libcork
+	url = https://github.com/shadowsocks/libcork.git
+    ignore = dirty
+[submodule "libipset"]
+	path = libipset
+	url = https://github.com/shadowsocks/ipset.git
+    ignore = dirty
