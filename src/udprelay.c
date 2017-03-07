@@ -398,12 +398,12 @@ create_server_socket(const char *host, const char *port)
         return -1;
     }
 
-    rp = result;
-
-    if (rp == NULL) {
+    if (result == NULL) {
         LOGE("[udp] cannot bind");
         return -1;
     }
+
+    rp = result;
 
     /*
      * On Linux, with net.ipv6.bindv6only = 0 (the default), getaddrinfo(NULL) with
@@ -471,6 +471,7 @@ create_server_socket(const char *host, const char *port)
         }
 
         close(server_sock);
+        server_sock = -1;
     }
 
     freeaddrinfo(result);
