@@ -32,8 +32,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include <ev.h>
-#include <udns.h>
 
 #ifdef __MINGW32__
 #include "win32.h"
@@ -42,6 +40,14 @@
 #include <netinet/in.h>
 #include <errno.h>
 #include <unistd.h>
+#endif
+
+#include <udns.h>
+
+#ifdef HAVE_LIBEV_EV_H
+#include <libev/ev.h>
+#else
+#include <ev.h>
 #endif
 
 #include "resolv.h"

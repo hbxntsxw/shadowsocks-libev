@@ -20,8 +20,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <ipset/ipset.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <ctype.h>
+#include <ipset/ipset.h>
 
 #include "rule.h"
 #include "utils.h"
