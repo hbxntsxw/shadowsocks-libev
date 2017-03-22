@@ -11,7 +11,7 @@ created by [@clowwindy](https://github.com/clowwindy), and maintained by
 
 Current version: 3.0.2 | [Changelog](debian/changelog)
 
-Travis CI: [![Travis CI](https://travis-ci.org/Windendless/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/Windendless/shadowsocks-libev)
+Travis CI: [![Travis CI](https://travis-ci.org/shadowsocks/shadowsocks-libev.svg?branch=master)](https://travis-ci.org/shadowsocks/shadowsocks-libev)
 
 ## Features
 
