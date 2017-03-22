@@ -5,13 +5,12 @@ compiler:
     - clang
 env:
     global:
-        - LIBSODIUM_VER=1.0.11
         - MBEDTLS_VER=2.4.0
 before_install:
     - wget https://tls.mbed.org/download/mbedtls-$MBEDTLS_VER-gpl.tgz
     - tar xvf mbedtls-$MBEDTLS_VER-gpl.tgz
     - pushd mbedtls-$MBEDTLS_VER
-    - make
+    - make SHARED=1
     - sudo make install
     - popd
     # Load cached docker images
