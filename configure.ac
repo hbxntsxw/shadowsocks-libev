@@ -46,9 +46,9 @@ AM_CONDITIONAL([ENABLE_DOCUMENTATION], [test x$disable_documentation = xfalse])
 
 AM_COND_IF([ENABLE_DOCUMENTATION], [
   AC_PATH_PROG([ASCIIDOC], [asciidoc])
-  test x"${ASCIIDOC}" != x || AC_MSG_ERROR([Cannot find `asciidoc` in PATH.]) 
+  test x"${ASCIIDOC}" != x || AC_MSG_ERROR([Cannot find `asciidoc` in PATH.])
   AC_PATH_PROG([XMLTO], [xmlto])
-  test x"$XMLTO" != x || AC_MSG_ERROR([Cannot find `xmlto` in PATH.]) 
+  test x"$XMLTO" != x || AC_MSG_ERROR([Cannot find `xmlto` in PATH.])
   AC_PATH_PROG([GZIP], [gzip], [gzip])
   AC_PATH_PROG([MV], [mv], [mv])
   AC_PROG_SED
@@ -272,12 +272,12 @@ AC_CHECK_HEADERS([ev.h libev/ev.h], [], [])
 AC_CHECK_LIB([ev], [ev_loop_destroy], [LIBS="-lev $LIBS"], [AC_MSG_ERROR([Couldn't find libev. Try installing libev-dev@<:@el@:>@.])])
   ],
   [AC_CONFIG_FILES([libudns/Makefile
-                 libev/Makefile])])
+                 libev/Makefile
+		 libbloom/Makefile])])
 
 AC_CONFIG_FILES([ shadowsocks-libev.pc
                  Makefile
-                 src/Makefile
-                 libbloom/Makefile])
+                 src/Makefile])
 
 AC_CONFIG_FILES([libcork/Makefile libipset/Makefile])
 
